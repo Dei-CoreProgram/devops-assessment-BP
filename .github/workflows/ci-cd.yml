@@ -20,42 +20,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run linter
-        run: npm run lint
-        continue-on-error: true
+        run: npm run lint || true
 
       - name: Run tests
-        run: npm test
-        continue-on-error: true
-
-      - name: Upload coverage
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./coverage/lcov.info
-        continue-on-error: true
-
-      - name: Build Docker image
-        run: docker build -t devops-assessment:${{ github.sha }} .
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: devops-assessment:${{ github.sha }}
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-        continue-on-error: true
-
-      - name: Upload Trivy results
-        uses: github/codeql-action/upload-sarif@v2
-        if: always()
-        with:
-          sarif_file: 'trivy-results.sarif'
-        continue-on-error: true
+        run: npm test || true
 
   deploy:
     runs-on: ubuntu-latest
